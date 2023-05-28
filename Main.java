@@ -1,319 +1,329 @@
-package StockMarket;
+package StockMarket.main;
 
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.Scanner;
+import java.io.PrintWriter;
 
 public class Main {
+	
+	public static int getIntegerInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit,
+			String prompt, String errorMsg) {
+		// Declare necessary variables
+		int userNum = 0;
 
-    public static int getIntegerInput(Scanner in, boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit, String prompt, String errorMsg) {
-        boolean validInput = false;
-        int num = 0;
+		boolean validInput = false;
 
-        while (validInput != true) {
-            validInput = true;
-            System.out.println(prompt);
-            num = in.nextInt();
-            
-            try {
-                if (num < 0) {}
-            } catch (NumberFormatException nfe) {
-                System.out.println(errorMsg);
-            } // End try-catch block
+		String inputStr = "";
 
-            if (lowerLimitFlag && num < lowerLimit) {
-                System.out.println(errorMsg);
-                validInput = false;
-            }
+		// End try/catch block
+		while (validInput != true) {
+			// Ask the user for input and parse that input
+			validInput = true;
+			inputStr = JOptionPane.showInputDialog(prompt);
+			try {
+				userNum = Integer.parseInt(inputStr);
+			} catch (NumberFormatException nfe) {
+				validInput = false;
+			} // End try/catch block
+				// Input validation for the lowerLimit num
+			if (lowerLimitFlag && userNum < lowerLimit) {
+				JOptionPane.showMessageDialog(null, errorMsg);
+				validInput = false;
+			}
+			// Input validation for the upperLimit num
+			if (upperLimitFlag && userNum > upperLimit) {
+				JOptionPane.showMessageDialog(null, errorMsg);
+				validInput = false;
+			}
+		} // End the while loop
+		return userNum;
 
-            if (upperLimitFlag && num > upperLimit) {
-                System.out.println(errorMsg);
-                validInput = false;
-            }
-        } // End while loop
-        in.close();
-        return num;
-    } // End getDoubleInput
+	} // End getIntegerInput
 
-    public static double getDoubleInput(Scanner in, boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit, String prompt, String errorMsg) {
-        boolean validInput = false;
-        double num = 0;
+	public static double getDoubleInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit,
+			String prompt, String errorMsg) {
+		// Declare necessary variables
+		double userNum = 0;
 
-        while (validInput != true) {
-            validInput = true;
-            System.out.println(prompt);
-            num = in.nextDouble();
-            
-            try {
-                if (num < 0) {}
-            } catch (NumberFormatException nfe) {
-                System.out.println(errorMsg);
-            } // End try-catch block
+		boolean validInput = false;
 
-            if (lowerLimitFlag && num < lowerLimit) {
-                System.out.println(errorMsg);
-                validInput = false;
-            }
+		String inputStr = "";
 
-            if (upperLimitFlag && num > upperLimit) {
-                System.out.println(errorMsg);
-                validInput = false;
-            }
-        } // End while loop
-        in.close();
-        return num;
-    } // End getDoubleInput
+		// End try/catch block
+		while (validInput != true) {
+			// Ask the user for input and parse that input
+			validInput = true;
+			inputStr = JOptionPane.showInputDialog(prompt);
+			try {
+				userNum = Double.parseDouble(inputStr);
+			} catch (NumberFormatException nfe) {
+				validInput = false;
+			} // End try/catch block
+				// Input validation for the lowerLimit num
+			if (lowerLimitFlag && userNum < lowerLimit) {
+				JOptionPane.showMessageDialog(null, errorMsg);
+				validInput = false;
+			}
+			// Input validation for the upperLimit num
+			if (upperLimitFlag && userNum > upperLimit) {
+				JOptionPane.showMessageDialog(null, errorMsg);
+				validInput = false;
+			}
+		} // End the while loop
+		return userNum;
 
-    public static void importFile(Stock[] stockArray, String filename) {
-        File newFile = new File(filename);
-        Scanner read = null;
+	} // End getDoubleInput
 
-        if (newFile.exists()) {
-            System.out.println("Absoulute path: " + newFile.getAbsolutePath());
-            System.out.println("Writeable: " + newFile.canWrite());
-            System.out.println("Readable: " + newFile.canRead());
-            System.out.println();
-        } else {
-            System.out.println("File does not exist");
-            System.out.println();
-            System.exit(0);
-        }
+	public static int isStockInList(Stock[] stockArray, String stockSymbol) {
+		for (int i = 0; i < Stock.getNumStocks(); i++) {
+			Stock newStock = stockArray[i];
+			String currentStockSymbol = newStock.getSymbol();
 
-        String symbol = "";
-        String name = "";
-        String tempLow = "";
-        String tempHigh = "";
-        String tempCurrent = "";
+			if (stockSymbol.equals(currentStockSymbol)) {
+				return i;
+			} // End second if statement
+		} // End for loop
+		return -1;
+	} // End isStockInList
 
-        double low = 0;
-        double high = 0;
-        double current = 0;
+	public static void importStocks(Stock[] stockArray) {
+		String stockSymbol;
+		String stockName;
+		String tempCurrentPrice;
+		String tempLow;
+		String tempHigh;
 
-        int currIndex = 0;
+		int indexNumber = 0;
 
-        try {
-            read = new Scanner(newFile);
-        } catch (FileNotFoundException ex) {
-            ex.getMessage();
-            System.exit(0);
-        }
+		double low = 0;
+		double high = 0;
+		double currentPrice = 0;
 
-        try {
-            read.useDelimiter(",");
-            while (read.hasNext()) {
-                name = read.next();
-                name = name.trim();
+		// Welcome the user to the stock tracker and input the file chooser
+		JOptionPane.showMessageDialog(null, "Please select an input file with the initial stock data",
+				"Welcome to the stock tracker!", JOptionPane.INFORMATION_MESSAGE);
+		// Create the JFileChooser Object that is going to be used for reading the file
+		JFileChooser inputFile = new JFileChooser();
+		Scanner input = null;
+		if (inputFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			// Gathering the selected file
+			File newFile = inputFile.getSelectedFile();
 
-                symbol = read.next();
-                symbol = symbol.trim();
-                symbol = symbol.toUpperCase();
+			try {
+				input = new Scanner(newFile);
+			} catch (FileNotFoundException ex) {
+				JOptionPane.showMessageDialog(null, "File was not found\nExiting Program");
+				System.exit(0);
+			}
 
-                tempCurrent = read.next();
-                tempCurrent = tempCurrent.trim();
-                current = Double.parseDouble(tempCurrent);
+			/* Read text from the file and match the correct variables with where they are in
+			the input file, have to use trim to remove unnecessary spaces and such */
+			input.useDelimiter(",");
+			while (input.hasNext()) {
+				stockName = input.next();
+				stockName = stockName.trim();
 
-                tempLow = read.next();
-                tempLow = tempLow.trim();
-                low = Double.parseDouble(tempLow);
+				stockSymbol = input.next();
+				stockSymbol = stockSymbol.trim();
+				stockSymbol = stockSymbol.toUpperCase();
 
-                tempHigh = read.next();
-                tempHigh = tempHigh.trim();
-                high = Double.parseDouble(tempHigh);
-                // Then it should go to the next line, but it was catching the name Lululemon on the next line as what is next for the high price
-                stockArray[currIndex++] = new Stock(name, symbol, current, low, high);
-                
-            } // End while loop
-            read.close();
-        } catch (Exception e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        } // End try-catch
-    } // End importFile
-    
-    public static void exportFile(Stock[] stockArray, String filename) {
-        String data = "";
-        Scanner user = new Scanner(System.in);
-        int input;
-        PrintWriter output = null;
-        File outputFile = new File(filename);
+				tempCurrentPrice = input.next();
+				tempCurrentPrice = tempCurrentPrice.trim();
+				currentPrice = Double.parseDouble(tempCurrentPrice);
 
-        if (outputFile.exists()) {
-            System.out.println(filename + " already exists.");
-            input = getIntegerInput(user, true, 1, true, 2, "What would you like to do?\n1 - Overwrite\n2 - Nothing\n", "Error please try again.");
-            
-            if (input == 1) {
-                // Delete the previous file and overwrite it with the new
-            } else if (input == 2) {
-                System.out.println("Exiting program");
-                System.exit(0);
-            }
-        } // End if statement
+				tempLow = input.next();
+				tempLow = tempLow.trim();
+				low = Double.parseDouble(tempLow);
 
-        try {
-            output = new PrintWriter(filename);
-        } catch (FileNotFoundException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(0);
-        } // End try-catch
+				tempHigh = input.next();
+				tempHigh = tempHigh.trim();
+				high = Double.parseDouble(tempHigh);
 
-        for (int i = 0; i < Stock.getNumStocks(); i++) {
-            data = stockArray[i].getName() + ", ";
-            data += stockArray[i].getSymbol() + ", ";
-            data += String.format("%.2f", stockArray[i].getLastPrice() + ", ");
-            data += String.format("%.2f", stockArray[i].getLow() + ", ");
-            data += String.format("%.2f", stockArray[i].getHigh() + ", ");
+				stockArray[indexNumber++] = new Stock(stockName, stockSymbol, currentPrice, low, high);
 
-            output.write(data);
-        } // End for loop
+			}
+			// Close the file
+			input.close();
+		} // End if
+		else {
+			JOptionPane.showMessageDialog(null, "No file selected");
+		}
 
-        System.out.println("Stock data was successfuly exported to " + outputFile.getName() + "\n");
-        output.close();
-        user.close();
-    } // End exportFile
-    
-    public static int isStockInList(Stock[] stockArray, String symbol) {
-        for (int i = 0; i < Stock.getNumStocks(); i++) {
-            Stock currStock = stockArray[i];
-            String currStockSym = currStock.getSymbol();
+	} // End importFile
 
-            if (symbol.equals(currStockSym)) {
-                return i;
-            }
-        }
+	public static void exportStocks(Stock[] stockArray) {
+		String outputStr = "";
+		PrintWriter output = null;
+		File outputFile = new File("stockdata.txt");
 
-        return -1;
-    } // End isStockInList
-    
-    public static void deleteStocks(Stock[] stockArray) {
-        Scanner in = new Scanner(System.in);
-        String stockSymbol;
+		if (outputFile.exists()) {
+			int delete = JOptionPane.showConfirmDialog(null,
+					"The file " + outputFile.getName() + " already exists. Would you like to overwrite it?");
+			if (delete == JOptionPane.NO_OPTION) {
+				JOptionPane.showMessageDialog(null, "Exiting program");
+				System.exit(0);
+			}
+		}
+		try {
+			output = new PrintWriter(outputFile);
+		} catch (FileNotFoundException ex) {
+			JOptionPane.showMessageDialog(null, "File does not exist, exiting");
+			System.exit(0);
+		}
+		// Create the for loop to print out the data of the stocks to the document
+		for (int ii = 0; ii < Stock.getNumStocks(); ii++) {
+			outputStr = stockArray[ii].getName() + ", ";
+			outputStr += stockArray[ii].getSymbol() + ", ";
+			outputStr += String.format("%.2f", stockArray[ii].getLastPrice()) + ", ";
+			outputStr += String.format("%.2f", stockArray[ii].getLow()) + ", ";
+			outputStr += String.format("%.2f", stockArray[ii].getHigh()) + "\n";
 
-        System.out.println("Please enter the stock symbol you would like to delete");
-		stockSymbol = in.next();
+			output.write(outputStr);
+
+		}
+		// Close the file
+		JOptionPane.showMessageDialog(null, "Stock data was successfully exported to " + outputFile.getName());
+		output.close();
+
+//		return outputFile;
+	} // End exportFile
+
+	public static void deleteStocks(Stock[] stockArray) {
+		String stockSymbol;
+		stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol you would like to delete.");
 		stockSymbol = stockSymbol.toUpperCase();
+		int deleteStockSymbol = isStockInList(stockArray, stockSymbol);
 
-		int index = isStockInList(stockArray, stockSymbol); // The index of the stock we wish to delete
-
-		if (index != -1) {
+		if (deleteStockSymbol != -1) {
 			// Find the line where the stock symbol is and delete that line from the file
-			for (int i = index; i < Stock.getNumStocks() - 1; i++) {
+			for (int i = deleteStockSymbol; i < Stock.getNumStocks() - 1; i++) {
 				stockArray[i] = stockArray[i + 1];
 			}
 			stockArray[Stock.getNumStocks() - 1] = null;
 			Stock.deleteStock();
-			System.out.println("Successfully deleted " + stockSymbol);
+			JOptionPane.showMessageDialog(null, "Successfully deleted " + stockSymbol);
 		} else {
-			System.out.println("The stock " + stockSymbol + ", you tried to delete is one we are not currently tracking");
+			JOptionPane.showMessageDialog(null,
+					"The stock " + stockSymbol + ", you tried to delete is one we are not currently tracking");
 		}
-
-        in.close();
 	} // End deleteStocks
-    public static void main(String[] args) {
-       Scanner input = new Scanner(System.in);
-       int userInput = 0;
 
-       Stock[] stockArray = new Stock[10]; // Could use an arrayList but the original assignmnet has us working with arrays
-       String companyName;
-       String stockSymbol;
-       double current;
-       double low;
-       double high;
-    
-       String filename = "";
-       
-       // Import the data of stocks from the file (spreedsheet or txt)
-       System.out.println("Please select an input file with the initial stock data. If you do not have a file you would like to select please just hit enter.");
-       filename = input.nextLine();
+	public static void main(String[] args) {
+		int userInput = 0;
+		Stock[] stockArray = new Stock[10];
 
-       if (filename.equals(null)) {
-        // No import file was specified so it hits this statement and moves on
-       } else {
-        importFile(stockArray, filename);
-       }
+		
+		String stockSymbol;
+		String stockName;
+		String inputStr, outputStr = null;
 
-       while (userInput != 4) {
-            userInput = getIntegerInput(input, true, 0, true, 4, "Enter 0 if you want to add a stock\nEnter 1 if you want stock statistics\nEnter 2 if you want to output stock data to file stockdata.txt\nEnter 3 if you want to delete a stock\nEnter 4 if you want to exit", "Invalid input. Please try again.");
+		double low = 0;
+		double high = 0;
+		double currentPrice = 0;
 
-            // Add or get stock information 
-            if (userInput == 0) {
-                if (Stock.getNumStocks() == stockArray.length) {
-                    System.out.println("Cannot add another stock - our list is full.");
-                    continue;
-                }
+		importStocks(stockArray);
+		
+		// Prompt the user on what they are allowed to do in the stock app
+		while (userInput != 4) {
+			userInput = getIntegerInput(true, 0, true, 4,
+					"Enter 0 if you want to add a stock\nEnter 1 if you want stock statistics\nEnter 2 if you want to output stock data to file stockdata.txt\nEnter 3 if you want to delete a stock\nEnter 4 if you want to exit",
+					"Invalid input try again");
+			
+			// Add a stock
+			if (userInput == 0) {
+				if (Stock.getNumStocks() == stockArray.length) {
+					JOptionPane.showMessageDialog(null, "Can't add another stock - our list is full!");
+					continue;
+				}
 
-                companyName = input.nextLine();
-                stockSymbol = input.nextLine();
-                stockSymbol = stockSymbol.toUpperCase();
-                low = getDoubleInput(input, true, 0, false, 1, "Please enter the 52 week low for " + companyName, "Invalid input, try again.");
-                high = getDoubleInput(input, true, 0, false, 1, "Please enter the 52 week high for " + companyName, "Invalid input, try again.");
-                current = getDoubleInput(input, true, 0, false, 1, "Please enter the current price for " + companyName, "Invalid input, try again.");
+				stockName = JOptionPane.showInputDialog("Please enter the stock name:");
+				stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol:");
+				stockSymbol = stockSymbol.toUpperCase();
+				// Gather the 52WeekLow from the user and parse their input
+				low = getDoubleInput(true, 0, false, 1, "Please enter the 52 week low for " + stockName,
+						"Invalid Input try again");
+				// Gather the 52WeekHigh from the user and parse their input
+				high = getDoubleInput(true, 0, false, 1, "Please enter the 52 week high for " + stockName,
+						"Invalid input try again");
+				// Gather the current trading price for the company
+				currentPrice = getDoubleInput(true, 0, false, 1, "Please enter the last trading price for " + stockName,
+						"Invalid input try again");
 
-                Stock newStock = new Stock(companyName, stockSymbol, current, low, high);
-                stockArray[Stock.getNumStocks()] = newStock;
-            } // End if userInput == 0
+				int tempNum = Stock.getNumStocks();
+				Stock userStock = new Stock(stockName, stockSymbol, currentPrice, low, high);
+				// Adding the value of the stock to the array
+				stockArray[tempNum] = userStock;
 
-            // View stock statistics
-            if (userInput == 1) {
-                String outputStr; 
+			} // End if Statement
+			
+			// View stock statistics
+			if (userInput == 1) {
+				stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol you're interested in");
+				stockSymbol = stockSymbol.toUpperCase();
+				int stockSymbolIndex = isStockInList(stockArray, stockSymbol);
+				if (stockSymbolIndex == -1) {
+					JOptionPane.showMessageDialog(null,
+							"I'm sorry but that symbol is not one we are currently tracking.");
+					continue;
+				}
 
-                System.out.println("Please enter the stock symbol you're interested in");
-                stockSymbol = input.next();
-                stockSymbol = stockSymbol.toUpperCase();
+				inputStr = JOptionPane.showInputDialog("Please enter the most recent price for " + stockSymbol);
+				currentPrice = Double.parseDouble(inputStr);
 
-                int specifiedIndex = isStockInList(stockArray, stockSymbol);
+				Stock stockObj = stockArray[stockSymbolIndex];
 
-                if (specifiedIndex == -1) {
-                    System.out.println("Sorry, for the stock you're interested ins is one that we are not currently tracking.");
-                    continue;
-                }
+				outputStr = "The current price of " + stockObj.getName() + " (" + stockObj.getSymbol() + ") stock is $"
+						+ String.format("%.2f", currentPrice) + ".\n";
 
-                System.out.println("Please enter the most recent price for " + stockSymbol);
-                current = input.nextDouble();
+				// Calculate the changes in price between the the low and high of the years
+				double changeOfCurrent = currentPrice - stockObj.getLastPrice();
+				double changeOfLow = currentPrice - stockObj.getLow();
+				double changeOfHigh = currentPrice - stockObj.getHigh();
 
-                Stock currStock = stockArray[specifiedIndex];
+				outputStr += "That represents a change of $" + String.format("%.2f", changeOfCurrent)
+						+ " from their most recent recorded price of $" + String.format("%.2f", stockObj.getLastPrice())
+						+ "\n";
 
-                outputStr = "The current price of " + currStock.getName() + " (" + currStock.getSymbol() + ") stock is " + String.format("%.2f", current);
+				stockObj.setCurrentPrice(currentPrice);
 
-                double changeInCurrent = current - currStock.getLastPrice();
-                double changeInLow = current - currStock.getLow();
-                double changeInHigh = current - currStock.getHigh();
+				// If current price is below the 52 week low
+				if (currentPrice < stockObj.getLow()) {
+					outputStr += "The current price is $" + String.format("%.2f", changeOfLow)
+							+ " below the stock's 52 week low of $" + String.format("%.2f", stockObj.getLow())
+							+ "!";
+				}
+				// If current price is above the 52 week high
+				if (currentPrice > stockObj.getHigh()) {
+					outputStr += "The current price is $" + String.format("%.2f", changeOfHigh)
+							+ " higher than the stock's 52 week high of $"
+							+ String.format("%.2f", stockObj.getHigh()) + "!";
+				}
+				// And finally if the current price is in between the 52 week low and high
+				if (currentPrice < stockObj.getHigh() && currentPrice > stockObj.getLow()) {
+					outputStr += "The current price is $" + String.format("%.2f", changeOfLow)
+							+ " above it's 52 week low of $" + String.format("%.2f", stockObj.getLow()) + " and $"
+							+ String.format("%.2f", changeOfHigh) + " below it's 52 week high of $"
+							+ String.format("%.2f", stockObj.getHigh()) + "!";
+				}
+				// Display the output to the user
+				JOptionPane.showMessageDialog(null, outputStr);
+			} // End else if userInput == 1
 
-                outputStr += "That represents a change of $" + String.format("%/2f", changeInCurrent)
-                + " from their most recent recorded price of $" + String.format("%.2f", currStock.getLastPrice() + "\n");
+			// output the stock data
+			if (userInput == 2) {
+				exportStocks(stockArray);
+			} // End if userInput == 2
 
-                currStock.setCurrentPrice(current);
+			// delete a stock
+			if (userInput == 3) {
+				deleteStocks(stockArray);
+			} // End if userInput == 3
 
-                if (current < currStock.getLow()) {
+		} // End while loop
 
-                }
+	} // End main
 
-                if (current > currStock.getHigh()) {
-
-                }
-
-                if (current < currStock.getHigh() && current > currStock.getLow()) {
-
-                }
-
-                System.out.println(outputStr);
-
-            } // End if userInput == 1
-
-            // Export stock data
-            if (userInput == 2) {
-                String exportFilename = "";
-                System.out.println("What is the name of the file you would like to export the data to?");
-                exportFilename = input.next();
-
-                exportFile(stockArray, exportFilename);
-            } // End if userInput == 2
-
-            // Delete a stock
-            if (userInput == 3) {
-                deleteStocks(stockArray);
-            } // End if userInput == 3
-       } // End while loop
-    } // End main method
-    
-} // End Main class
+} // End JoeMaitanPA08
