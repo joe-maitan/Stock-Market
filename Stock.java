@@ -1,5 +1,3 @@
-package StockMarket.Stock;
-
 public class Stock {
 
     String companyName;

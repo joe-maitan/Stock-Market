@@ -1,4 +1,4 @@
-package StockMarket.StockMarket;
+package StockMarket.Main;
 
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.io.PrintWriter;
 
-public class StockMarket {
+public class Main {
 	
 	public static int getIntegerInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit,
 			String prompt, String errorMsg) {
