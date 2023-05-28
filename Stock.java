@@ -1,4 +1,4 @@
-package StockMarket;
+package StockMarket.Stock;
 
 public class Stock {
 

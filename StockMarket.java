@@ -1,4 +1,4 @@
-package StockMarket;
+package StockMarket.StockMarket;
 
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
