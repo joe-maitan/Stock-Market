@@ -1,10 +1,10 @@
 public class Stock {
 
-    String companyName;
-    String stockSymbol;
-    double lastPrice;
-    double yearLow;
-    double yearHigh;
+    private String companyName;
+    private String stockSymbol;
+    private double lastPrice;
+    private double yearLow;
+    private double yearHigh;
 
     static int numStocks = 0;
 
