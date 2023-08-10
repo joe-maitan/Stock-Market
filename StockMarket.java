@@ -7,9 +7,8 @@ import java.io.PrintWriter;
 
 public class StockMarket {
 	
-	public static int getIntegerInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit,
-			String prompt, String errorMsg) {
-		// Declare necessary variables
+	public static int getIntegerInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit, String prompt, String errorMsg) {
+		
 		int userNum = 0;
 
 		boolean validInput = false;
