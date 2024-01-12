@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 
 public class StockMarket {
 	
-	public static int getIntegerInput(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
+	public static int get_integer_input(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
 		String user_input = "";
 		int input = 0;
 		boolean valid_input = false;
@@ -32,7 +32,7 @@ public class StockMarket {
 		return input;
 	} // End getIntegerInput
 
-	public static double getDoubleInput(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
+	public static double get_double_input(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
 		String user_input = "";
 		double input = 0;
 		boolean valid_input = false;
@@ -57,7 +57,7 @@ public class StockMarket {
 		return input;
 	} // End getDoubleInput
 
-	public static int isStockInList(Stock[] stock_data, String target_symbol) {
+	public static int is_stock_in_list(Stock[] stock_data, String target_symbol) {
 		for (int i = 0; i < Stock.get_num_stocks(); i++) {
 			Stock s = stock_data[i];
 			String s_symbol = s.get_symbol();
@@ -70,7 +70,7 @@ public class StockMarket {
 		return -1;
 	} // End isStockInList
 
-	public static void importStocks(Stock[] stock_data) {
+	public static void import_data(Stock[] stock_data) {
 		String comp_name;
 		String stock_symbol;
 		String temp_curr_price;
@@ -130,176 +130,177 @@ public class StockMarket {
 		} // End if-else statement
 	} // End importFile
 
-	public static void exportStocks(Stock[] stockArray) {
+	public static void export_data(Stock[] stock_data) {
 		String outputStr = "";
 		PrintWriter output = null;
 		File outputFile = new File("stockdata.txt");
 
 		if (outputFile.exists()) {
-			int delete = JOptionPane.showConfirmDialog(null,
-					"The file " + outputFile.getName() + " already exists. Would you like to overwrite it?");
+			int delete = JOptionPane.showConfirmDialog(null, "The file " + outputFile.getName() + " already exists. Would you like to overwrite it?");
+			
 			if (delete == JOptionPane.NO_OPTION) {
 				JOptionPane.showMessageDialog(null, "Exiting program");
 				System.exit(0);
-			}
-		}
+			} // End if-statement
+		} // End if-statement
+		
 		try {
 			output = new PrintWriter(outputFile);
 		} catch (FileNotFoundException ex) {
 			JOptionPane.showMessageDialog(null, "File does not exist, exiting");
 			System.exit(0);
-		}
-		// Create the for loop to print out the data of the stocks to the document
-		for (int ii = 0; ii < Stock.get_num_stocks(); ii++) {
-			outputStr = stockArray[ii].getName() + ", ";
-			outputStr += stockArray[ii].getSymbol() + ", ";
-			outputStr += String.format("%.2f", stockArray[ii].getLastPrice()) + ", ";
-			outputStr += String.format("%.2f", stockArray[ii].getLow()) + ", ";
-			outputStr += String.format("%.2f", stockArray[ii].getHigh()) + "\n";
-
+		} // End try-catch block
+		
+		for (int i = 0; i < Stock.get_num_stocks(); ++i) { // Create the for loop to print out the data of the stocks to the document
+			Stock curr_s = stock_data[i];
+			outputStr = curr_s.get_name() + ", ";
+			outputStr += curr_s.get_symbol() + ", ";
+			outputStr += String.format("%.2f", curr_s.get_current_price()) + ", ";
+			outputStr += String.format("%.2f", curr_s.get_year_low()) + ", ";
+			outputStr += String.format("%.2f", curr_s.get_year_high()) + "\n";
 			output.write(outputStr);
-
-		}
-		// Close the file
+		} // End for loop
+		
 		JOptionPane.showMessageDialog(null, "Stock data was successfully exported to " + outputFile.getName());
 		output.close();
+	} // End exportFile() method
 
-//		return outputFile;
-	} // End exportFile
-
-	public static void deleteStocks(Stock[] stockArray) {
+	public static void delete_a_stock(Stock[] stock_data) {
 		String stockSymbol;
 		stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol you would like to delete.");
 		stockSymbol = stockSymbol.toUpperCase();
-		int deleteStockSymbol = isStockInList(stockArray, stockSymbol);
+		int deleteStockSymbol = is_stock_in_list(stock_data, stockSymbol);
 
 		if (deleteStockSymbol != -1) {
-			// Find the line where the stock symbol is and delete that line from the file
-			for (int i = deleteStockSymbol; i < Stock.getNumStocks() - 1; i++) {
-				stockArray[i] = stockArray[i + 1];
-			}
-			stockArray[Stock.getNumStocks() - 1] = null;
-			Stock.deleteStock();
+			for (int i = deleteStockSymbol; i < Stock.get_num_stocks() - 1; i++) { // Find the line where the stock symbol is and delete that line from the file
+				stock_data[i] = stock_data[i + 1];
+			} // End for loop
+
+			stock_data[Stock.get_num_stocks() - 1] = null;
+			Stock.delete_stock();
 			JOptionPane.showMessageDialog(null, "Successfully deleted " + stockSymbol);
 		} else {
-			JOptionPane.showMessageDialog(null,
-					"The stock " + stockSymbol + ", you tried to delete is one we are not currently tracking");
-		}
+			JOptionPane.showMessageDialog(null, "The stock " + stockSymbol + ", you tried to delete is one we are not currently tracking");
+		} // End if-else statement
 	} // End deleteStocks
 
-	public static void main(String[] args) {
-		int userInput = 0;
-		Stock[] stockArray = new Stock[10];
-
-		
-		String stockSymbol;
-		String stockName;
-		String inputStr, outputStr = null;
-
+	public static void add_stock(Stock[] stock_data) {
+		String symbol;
+		String name;
 		double low = 0;
 		double high = 0;
 		double currentPrice = 0;
 
-		importStocks(stockArray);
+		if (Stock.get_num_stocks() == stock_data.length) {
+			JOptionPane.showMessageDialog(null, "Can't add another stock - our list is full!");
+			return;
+		} // End if-statement
+
+		name = JOptionPane.showInputDialog("Please enter the stock name:");
+		symbol = JOptionPane.showInputDialog("Please enter the stock symbol:");
+		symbol = symbol.toUpperCase();
+		
+		low = get_double_input(true, 0, false, 1, "Please enter the 52 week low for " + name, "Invalid Input try again");
+		high = get_double_input(true, 0, false, 1, "Please enter the 52 week high for " + name, "Invalid input try again");
+		currentPrice = get_double_input(true, 0, false, 1, "Please enter the last trading price for " + name, "Invalid input try again");
+
+		int t = Stock.get_num_stocks();
+		Stock new_stock = new Stock(name, symbol, currentPrice, low, high);
+		
+		stock_data[t] = new_stock; // Adding the value of the stock to the array
+	} // End add_stock() method
+
+	public static void view_stock_statistics(Stock[] stock_data) {
+		String input_str, output_str = null;
+		String symbol;
+		// String name;
+		// double low = 0;
+		// double high = 0;
+		double currentPrice = 0;
+
+		symbol = JOptionPane.showInputDialog("Please enter the stock symbol you're interested in");
+		symbol = symbol.toUpperCase();
+				
+		int stockSymbolIndex = is_stock_in_list(stock_data, symbol);
+
+		if (stockSymbolIndex == -1) {
+			JOptionPane.showMessageDialog(null, "I'm sorry but that symbol is not one we are currently tracking.");
+			return;
+		}
+
+		input_str = JOptionPane.showInputDialog("Please enter the most recent price for " + symbol);
+		currentPrice = Double.parseDouble(input_str);
+
+		Stock s = stock_data[stockSymbolIndex];
+
+		output_str = "The current price of " + s.get_name() + " (" + s.get_symbol() + ") stock is $" + String.format("%.2f", currentPrice) + ".\n";
+
+		// Calculate the changes in price between the the low and high of the years
+		double changeOfCurrent = currentPrice - s.get_current_price();
+		double changeOfLow = currentPrice - s.get_year_low();
+		double changeOfHigh = currentPrice - s.get_year_high();
+
+		output_str += "That represents a change of $" + String.format("%.2f", changeOfCurrent)
+		+ " from their most recent recorded price of $" + String.format("%.2f", s.get_current_price()) + "\n";
+
+		s.set_current_price(currentPrice);
+
+		// If current price is below the 52 week low
+		if (currentPrice < s.get_year_low()) {
+			output_str += "The current price is $" + String.format("%.2f", changeOfLow)
+			+ " below the stock's 52 week low of $" + String.format("%.2f", s.get_year_low())
+			+ "!";
+		}
+		
+		// If current price is above the 52 week high
+		if (currentPrice > s.get_year_high()) {
+			output_str += "The current price is $" + String.format("%.2f", changeOfHigh)
+			+ " higher than the stock's 52 week high of $"
+			+ String.format("%.2f", s.get_year_high()) + "!";
+		}
+		
+		// And finally if the current price is in between the 52 week low and high
+		if (currentPrice < s.get_year_low() && currentPrice > s.get_year_low()) {
+			output_str += "The current price is $" + String.format("%.2f", changeOfLow)
+			+ " above it's 52 week low of $" + String.format("%.2f", s.get_year_low()) + " and $"
+			+ String.format("%.2f", changeOfHigh) + " below it's 52 week high of $"
+			+ String.format("%.2f", s.get_year_high()) + "!";
+		}
+		
+		// Display the output to the user
+		JOptionPane.showMessageDialog(null, output_str);
+	} // End view_stock_statistics
+	public static void main(String[] args) {
+		int user_in = 0;
+	
+		Stock[] our_stock_market = new Stock[10];
+		
+		import_data(our_stock_market);
 		
 		// Prompt the user on what they are allowed to do in the stock app
-		while (userInput != 4) {
-			userInput = getIntegerInput(true, 0, true, 4,
-					"Enter 0 if you want to add a stock\nEnter 1 if you want stock statistics\nEnter 2 if you want to output stock data to file stockdata.txt\nEnter 3 if you want to delete a stock\nEnter 4 if you want to exit",
-					"Invalid input try again");
+		while (user_in != 4) {
+			user_in = get_integer_input(true, 0, true, 4,
+			"Enter 0 if you want to add a stock\nEnter 1 if you want stock statistics\nEnter 2 if you want to output stock data to file stockdata.txt\nEnter 3 if you want to delete a stock\nEnter 4 if you want to exit",
+			"Invalid input try again");
 			
-			// Add a stock
-			if (userInput == 0) {
-				if (Stock.getNumStocks() == stockArray.length) {
-					JOptionPane.showMessageDialog(null, "Can't add another stock - our list is full!");
-					continue;
-				}
-
-				stockName = JOptionPane.showInputDialog("Please enter the stock name:");
-				stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol:");
-				stockSymbol = stockSymbol.toUpperCase();
-				// Gather the 52WeekLow from the user and parse their input
-				low = getDoubleInput(true, 0, false, 1, "Please enter the 52 week low for " + stockName,
-						"Invalid Input try again");
-				// Gather the 52WeekHigh from the user and parse their input
-				high = getDoubleInput(true, 0, false, 1, "Please enter the 52 week high for " + stockName,
-						"Invalid input try again");
-				// Gather the current trading price for the company
-				currentPrice = getDoubleInput(true, 0, false, 1, "Please enter the last trading price for " + stockName,
-						"Invalid input try again");
-
-				int tempNum = Stock.getNumStocks();
-				Stock userStock = new Stock(stockName, stockSymbol, currentPrice, low, high);
-				// Adding the value of the stock to the array
-				stockArray[tempNum] = userStock;
-
-			} // End if Statement
-			
-			// View stock statistics
-			if (userInput == 1) {
-				stockSymbol = JOptionPane.showInputDialog("Please enter the stock symbol you're interested in");
-				stockSymbol = stockSymbol.toUpperCase();
-				int stockSymbolIndex = isStockInList(stockArray, stockSymbol);
-				if (stockSymbolIndex == -1) {
-					JOptionPane.showMessageDialog(null,
-							"I'm sorry but that symbol is not one we are currently tracking.");
-					continue;
-				}
-
-				inputStr = JOptionPane.showInputDialog("Please enter the most recent price for " + stockSymbol);
-				currentPrice = Double.parseDouble(inputStr);
-
-				Stock stockObj = stockArray[stockSymbolIndex];
-
-				outputStr = "The current price of " + stockObj.getName() + " (" + stockObj.getSymbol() + ") stock is $"
-						+ String.format("%.2f", currentPrice) + ".\n";
-
-				// Calculate the changes in price between the the low and high of the years
-				double changeOfCurrent = currentPrice - stockObj.getLastPrice();
-				double changeOfLow = currentPrice - stockObj.getLow();
-				double changeOfHigh = currentPrice - stockObj.getHigh();
-
-				outputStr += "That represents a change of $" + String.format("%.2f", changeOfCurrent)
-						+ " from their most recent recorded price of $" + String.format("%.2f", stockObj.getLastPrice())
-						+ "\n";
-
-				stockObj.setCurrentPrice(currentPrice);
-
-				// If current price is below the 52 week low
-				if (currentPrice < stockObj.getLow()) {
-					outputStr += "The current price is $" + String.format("%.2f", changeOfLow)
-							+ " below the stock's 52 week low of $" + String.format("%.2f", stockObj.getLow())
-							+ "!";
-				}
-				// If current price is above the 52 week high
-				if (currentPrice > stockObj.getHigh()) {
-					outputStr += "The current price is $" + String.format("%.2f", changeOfHigh)
-							+ " higher than the stock's 52 week high of $"
-							+ String.format("%.2f", stockObj.getHigh()) + "!";
-				}
-				// And finally if the current price is in between the 52 week low and high
-				if (currentPrice < stockObj.getHigh() && currentPrice > stockObj.getLow()) {
-					outputStr += "The current price is $" + String.format("%.2f", changeOfLow)
-							+ " above it's 52 week low of $" + String.format("%.2f", stockObj.getLow()) + " and $"
-							+ String.format("%.2f", changeOfHigh) + " below it's 52 week high of $"
-							+ String.format("%.2f", stockObj.getHigh()) + "!";
-				}
-				// Display the output to the user
-				JOptionPane.showMessageDialog(null, outputStr);
-			} // End else if userInput == 1
-
-			// output the stock data
-			if (userInput == 2) {
-				exportStocks(stockArray);
-			} // End if userInput == 2
-
-			// delete a stock
-			if (userInput == 3) {
-				deleteStocks(stockArray);
-			} // End if userInput == 3
-
+			switch(user_in) {
+				case 0:
+					add_stock(our_stock_market);
+					break;
+				case 1:
+					view_stock_statistics(our_stock_market);
+					break;
+				case 2:
+					export_data(our_stock_market);
+					break;
+				case 3:
+					delete_a_stock(our_stock_market);
+					break;
+				default:
+					break;
+			} // End switch statement
 		} // End while loop
 
-	} // End main
+	} // End main method
 
-} // End JoeMaitanPA08
+} // End StockMarket class
