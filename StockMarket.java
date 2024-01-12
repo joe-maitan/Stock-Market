@@ -277,7 +277,6 @@ public class StockMarket {
 		
 		import_data(our_stock_market);
 		
-		// Prompt the user on what they are allowed to do in the stock app
 		while (user_in != 4) {
 			user_in = get_integer_input(true, 0, true, 4,
 			"Enter 0 if you want to add a stock\nEnter 1 if you want stock statistics\nEnter 2 if you want to output stock data to file stockdata.txt\nEnter 3 if you want to delete a stock\nEnter 4 if you want to exit",
