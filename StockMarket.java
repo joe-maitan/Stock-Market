@@ -58,11 +58,11 @@ public class StockMarket {
 	} // End getDoubleInput
 
 	public static int isStockInList(Stock[] stock_data, String target_symbol) {
-		for (int i = 0; i < Stock.getNumStocks(); i++) {
-			Stock newStock = stockArray[i];
-			String currentStockSymbol = newStock.getSymbol();
+		for (int i = 0; i < Stock.get_num_stocks(); i++) {
+			Stock s = stock_data[i];
+			String s_symbol = s.get_symbol();
 
-			if (stockSymbol.equals(currentStockSymbol)) {
+			if (s_symbol.equals(target_symbol)) {
 				return i;
 			} // End if statement
 		} // End for loop
@@ -70,69 +70,64 @@ public class StockMarket {
 		return -1;
 	} // End isStockInList
 
-	public static void importStocks(Stock[] stockArray) {
-		String stockSymbol;
-		String stockName;
-		String tempCurrentPrice;
-		String tempLow;
-		String tempHigh;
+	public static void importStocks(Stock[] stock_data) {
+		String comp_name;
+		String stock_symbol;
+		String temp_curr_price;
+		String temp_low;
+		String temp_high;
 
-		int indexNumber = 0;
+		int stock_number = 0;
 
 		double low = 0;
 		double high = 0;
-		double currentPrice = 0;
+		double curr_price = 0;
 
 		// Welcome the user to the stock tracker and input the file chooser
-		JOptionPane.showMessageDialog(null, "Please select an input file with the initial stock data",
-				"Welcome to the stock tracker!", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Please select an input file with the initial stock data", "Welcome to the stock tracker!", JOptionPane.INFORMATION_MESSAGE);
 		
 		JFileChooser inputFile = new JFileChooser(); // Create the JFileChooser Object that is going to be used for reading the file
 		Scanner input = null;
 		if (inputFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			// Gathering the selected file
-			File newFile = inputFile.getSelectedFile();
+			File newFile = inputFile.getSelectedFile(); // Gathering the selected file
 
 			try {
 				input = new Scanner(newFile);
 			} catch (FileNotFoundException ex) {
-				JOptionPane.showMessageDialog(null, "File was not found\nExiting Program");
+				JOptionPane.showMessageDialog(null, "File was not found.\nExiting Program");
 				System.exit(0);
-			}
+			} // End try-catch block 
 
 			/* Read text from the file and match the correct variables with where they are in
 			the input file, have to use trim to remove unnecessary spaces and such */
 			input.useDelimiter(",");
 			while (input.hasNext()) {
-				stockName = input.next();
-				stockName = stockName.trim();
+				comp_name = input.next();
+				comp_name = comp_name.trim();
 
-				stockSymbol = input.next();
-				stockSymbol = stockSymbol.trim();
-				stockSymbol = stockSymbol.toUpperCase();
+				stock_symbol = input.next();
+				stock_symbol = stock_symbol.trim();
+				stock_symbol = stock_symbol.toUpperCase();
 
-				tempCurrentPrice = input.next();
-				tempCurrentPrice = tempCurrentPrice.trim();
-				currentPrice = Double.parseDouble(tempCurrentPrice);
+				temp_curr_price = input.next();
+				temp_curr_price = temp_curr_price.trim();
+				curr_price = Double.parseDouble(temp_curr_price);
 
-				tempLow = input.next();
-				tempLow = tempLow.trim();
-				low = Double.parseDouble(tempLow);
+				temp_low = input.next();
+				temp_low = temp_low.trim();
+				low = Double.parseDouble(temp_low);
 
-				tempHigh = input.next();
-				tempHigh = tempHigh.trim();
-				high = Double.parseDouble(tempHigh);
+				temp_high = input.next();
+				temp_high = temp_high.trim();
+				high = Double.parseDouble(temp_high);
 
-				stockArray[indexNumber++] = new Stock(stockName, stockSymbol, currentPrice, low, high);
-
-			}
-			// Close the file
-			input.close();
-		} // End if
-		else {
+				stock_data[stock_number++] = new Stock(comp_name, stock_symbol, curr_price, low, high); /* Add the parsed data to our stock array */
+			} // End while loop (read the file)
+			
+			input.close(); // Close the file
+		} else {
 			JOptionPane.showMessageDialog(null, "No file selected");
-		}
-
+		} // End if-else statement
 	} // End importFile
 
 	public static void exportStocks(Stock[] stockArray) {
@@ -155,7 +150,7 @@ public class StockMarket {
 			System.exit(0);
 		}
 		// Create the for loop to print out the data of the stocks to the document
-		for (int ii = 0; ii < Stock.getNumStocks(); ii++) {
+		for (int ii = 0; ii < Stock.get_num_stocks(); ii++) {
 			outputStr = stockArray[ii].getName() + ", ";
 			outputStr += stockArray[ii].getSymbol() + ", ";
 			outputStr += String.format("%.2f", stockArray[ii].getLastPrice()) + ", ";
