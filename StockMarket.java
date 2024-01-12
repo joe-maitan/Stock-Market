@@ -7,82 +7,66 @@ import java.io.PrintWriter;
 
 public class StockMarket {
 	
-	public static int getIntegerInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit, String prompt, String errorMsg) {
-		
-		int userNum = 0;
-
-		boolean validInput = false;
-
-		String inputStr = "";
-
-		// End try/catch block
-		while (validInput != true) {
-			// Ask the user for input and parse that input
-			validInput = true;
-			inputStr = JOptionPane.showInputDialog(prompt);
+	public static int getIntegerInput(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
+		String user_input = "";
+		int input = 0;
+		boolean valid_input = false;
+			
+		while (valid_input != true) {
+			user_input = JOptionPane.showInputDialog(prompt);
+			
 			try {
-				userNum = Integer.parseInt(inputStr);
-			} catch (NumberFormatException nfe) {
-				validInput = false;
-			} // End try/catch block
-				// Input validation for the lowerLimit num
-			if (lowerLimitFlag && userNum < lowerLimit) {
-				JOptionPane.showMessageDialog(null, errorMsg);
-				validInput = false;
-			}
-			// Input validation for the upperLimit num
-			if (upperLimitFlag && userNum > upperLimit) {
-				JOptionPane.showMessageDialog(null, errorMsg);
-				validInput = false;
-			}
-		} // End the while loop
-		return userNum;
-
+				input = Integer.parseInt(user_input);
+			} catch (NumberFormatException e) {
+				valid_input = false;
+			} // End try-catch block
+			
+			if (lower_limit_flag && input < lower_limit || upper_limit_flag && input > upper_limit) {
+				valid_input = false;
+				JOptionPane.showMessageDialog(null, error_msg);
+			} else {
+				valid_input = true;
+			} // End if-else statement
+		} // End while loop
+					
+		return input;
 	} // End getIntegerInput
 
-	public static double getDoubleInput(boolean lowerLimitFlag, int lowerLimit, boolean upperLimitFlag, int upperLimit,
-			String prompt, String errorMsg) {
-		// Declare necessary variables
-		double userNum = 0;
-
-		boolean validInput = false;
-
-		String inputStr = "";
-
-		// End try/catch block
-		while (validInput != true) {
-			// Ask the user for input and parse that input
-			validInput = true;
-			inputStr = JOptionPane.showInputDialog(prompt);
+	public static double getDoubleInput(boolean lower_limit_flag, int lower_limit, boolean upper_limit_flag, int upper_limit, String prompt, String error_msg) {
+		String user_input = "";
+		double input = 0;
+		boolean valid_input = false;
+		
+		while (valid_input != true) {
+			user_input = JOptionPane.showInputDialog(prompt);
+		
 			try {
-				userNum = Double.parseDouble(inputStr);
-			} catch (NumberFormatException nfe) {
-				validInput = false;
-			} // End try/catch block
-				// Input validation for the lowerLimit num
-			if (lowerLimitFlag && userNum < lowerLimit) {
-				JOptionPane.showMessageDialog(null, errorMsg);
-				validInput = false;
-			}
-			// Input validation for the upperLimit num
-			if (upperLimitFlag && userNum > upperLimit) {
-				JOptionPane.showMessageDialog(null, errorMsg);
-				validInput = false;
-			}
-		} // End the while loop
-		return userNum;
-
+				input = Double.parseDouble(user_input);
+			} catch (NumberFormatException e) {
+				valid_input = false;
+			} // End try-catch block
+		
+			if (lower_limit_flag && input < lower_limit || upper_limit_flag && input > upper_limit) {
+				valid_input = false;
+				JOptionPane.showMessageDialog(null, error_msg);
+			} else {
+				valid_input = true;
+			} // End if-else statement
+		} // End while loop
+				
+		return input;
 	} // End getDoubleInput
 
-	public static int isStockInList(Stock[] stockArray, String stockSymbol) {
+	public static int isStockInList(Stock[] stock_data, String target_symbol) {
 		for (int i = 0; i < Stock.getNumStocks(); i++) {
 			Stock newStock = stockArray[i];
 			String currentStockSymbol = newStock.getSymbol();
 
 			if (stockSymbol.equals(currentStockSymbol)) {
 				return i;
-			} // End second if statement
+			} // End if statement
 		} // End for loop
+		
 		return -1;
 	} // End isStockInList
 
@@ -102,8 +86,8 @@ public class StockMarket {
 		// Welcome the user to the stock tracker and input the file chooser
 		JOptionPane.showMessageDialog(null, "Please select an input file with the initial stock data",
 				"Welcome to the stock tracker!", JOptionPane.INFORMATION_MESSAGE);
-		// Create the JFileChooser Object that is going to be used for reading the file
-		JFileChooser inputFile = new JFileChooser();
+		
+		JFileChooser inputFile = new JFileChooser(); // Create the JFileChooser Object that is going to be used for reading the file
 		Scanner input = null;
 		if (inputFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			// Gathering the selected file
